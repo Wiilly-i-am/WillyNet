@@ -30,3 +30,12 @@
 *.exe
 *.out
 *.app
+
+# Build directory
+/build/
+
+# Vs directory
+/.vs/
+
+# x64 directory
+/Y2S4Server/x64/

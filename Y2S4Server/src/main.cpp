@@ -2,6 +2,9 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
+
+static std::string response_data;
+
 DWORD WINAPI MainThread(LPVOID lpReserved)
 {
     bool init_hook = false;

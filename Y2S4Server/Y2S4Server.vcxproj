@@ -85,6 +85,7 @@
     <ClInclude Include="src\gui\gui.h" />
     <ClInclude Include="src\hooks\hooks.h" />
     <ClInclude Include="src\utils\includes.h" />
+    <ClInclude Include="src\utils\json_utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="includes\imgui\imgui.cpp" />
@@ -103,10 +104,10 @@
     <ClCompile Include="src\gui\gui.cpp" />
     <ClCompile Include="src\hooks\hooks.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\utils\json_utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="includes\kiero\minhook\dll_resources\MinHook.def" />
-    <None Include="src\server.py" />
     <None Include="x64\Debug\Y2S4Server.tlog\CL.command.1.tlog" />
     <None Include="x64\Debug\Y2S4Server.tlog\unsuccessfulbuild" />
     <None Include="x64\Debug\Y2S4Server.tlog\Y2S4Server.lastbuildstate" />
@@ -118,6 +119,7 @@
     <Text Include="x64\Debug\Y2S4Server.Build.CppClean.log" />
     <Text Include="x64\Debug\Y2S4Server.log" />
     <Text Include="x64\Debug\Y2S4Server.vcxproj.FileListAbsolute.txt" />
+    <Text Include="Y2S4Server.vcxproj.filters.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -228,8 +230,9 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);ws2_32.lib;bcrypt.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)includes/juice</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);ws2_32.lib;bcrypt.lib;wldap32.lib;crypt32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

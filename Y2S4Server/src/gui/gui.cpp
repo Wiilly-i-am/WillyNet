@@ -1,4 +1,5 @@
 #include "../utils/includes.h"
+#include "../utils/json_utils.h"
 
 void InitImGui(HWND window, ID3D11Device* device, ID3D11DeviceContext* context)
 {
@@ -35,14 +36,6 @@ void RenderGUI()
 
         firstFrame = false;
     }
-
-    // Lobby struc
-    struct Lobby {
-        std::string name;
-        std::string version;
-        bool hasPassword = false;
-        int ping = 0;
-    };
 
     // Globals
     static std::vector<Lobby> lobbies;
@@ -118,6 +111,11 @@ void RenderGUI()
                     newLobby.ping = rand() % 100 + 30;
 
                     lobbies.push_back(newLobby);
+
+                    // save to file
+                    if (!save_lobbies(lobbies, "lobbies.json")) {
+                        printf("Failed to save lobbies.json\n");
+                    }
 
                     // Reset form
                     // GREEN [BLAME] Changed strcpy to strcpy_s for safety
@@ -209,21 +207,21 @@ void RenderGUI()
 
         if (ImGui::BeginTabItem("About"))
         {
-            ImGui::Text("Version 1.0.0");
-            ImGui::Text("Developed by YourName");
+            ImGui::Text("Version 1.0.2r3");
+            ImGui::Text("Developed by WillyNull");
             ImGui::EndTabItem();
         }
 
         if (ImGui::BeginTabItem("Help"))
         {
-            ImGui::Text("For help, visit our website or contact support.");
+            ImGui::Text("For help, Please visit Operation Throwback.");
             ImGui::EndTabItem();
         }
 
         if (ImGui::BeginTabItem("Credits"))
         {
-            ImGui::BulletText("Developer 1");
-            ImGui::BulletText("Developer 2");
+            ImGui::BulletText("WillyNull");
+            ImGui::BulletText("Midly202");
             ImGui::EndTabItem();
         }
 

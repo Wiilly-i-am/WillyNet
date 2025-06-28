@@ -11,6 +11,8 @@
 #include <chrono>
 #include <vector>
 #include <algorithm>
+#include <sstream>
+#include <fstream>
 #include "../gui/gui.h"
 #include "../hooks/hooks.h"
 #include "kiero.h"

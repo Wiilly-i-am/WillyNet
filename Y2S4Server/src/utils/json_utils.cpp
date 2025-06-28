@@ -1,10 +1,7 @@
 #include "includes.h"
 #include "json_utils.h"
-#include <fstream>
-#include <sstream>
-#include <algorithm> // [CHANGED] for std::remove_if and std::isspace
 
-// escape special JSON characters
+// escapes json special characters in a string
 std::string escape_json(const std::string& s) {
 	std::string out;
 	for (char c : s) {
@@ -22,68 +19,96 @@ std::string escape_json(const std::string& s) {
 	return out;
 }
 
-// [CHANGED] Utility to trim quotes, commas, and whitespace from string
-std::string clean_json_string(const std::string& input) {
-	std::string s = input;
-	s.erase(std::remove_if(s.begin(), s.end(), [](unsigned char c) {
-		return std::isspace(c) || c == ',' || c == '"';
-		}), s.end());
-	return s;
-}
-
-// load existing lobbies (simple and naive)
-std::vector<Lobby> load_lobbies(const std::string& path) {
-	std::vector<Lobby> lobbies;
-	std::ifstream file(path);
-	if (!file.is_open())
-		return lobbies;
+// loads lobbies from json [midly]
+bool load_lobbies(std::vector<Lobby>& lobbies, const std::string& path)
+{
+	std::ifstream in(path);
+	if (!in.is_open())
+		return false;
 
 	std::string line;
-	while (std::getline(file, line)) {
-		if (line.find("{") != std::string::npos) {
-			Lobby lobby;
-			while (std::getline(file, line) && line.find("}") == std::string::npos) {
-				std::string value = line.substr(line.find(":") + 1);
-				value = clean_json_string(value); // [CHANGED] clean quotes, commas, whitespace
-
-				if (line.find("name") != std::string::npos)
-					lobby.name = value;
-				else if (line.find("version") != std::string::npos)
-					lobby.version = value;
-				else if (line.find("hasPassword") != std::string::npos)
-					lobby.hasPassword = (value == "true");
-				else if (line.find("ping") != std::string::npos)
-					lobby.ping = std::stoi(value);
-			}
-			lobbies.push_back(lobby);
+	Lobby current;
+	while (std::getline(in, line))
+	{
+		size_t pos;
+		if ((pos = line.find("\"name\":")) != std::string::npos)
+		{
+			current.name = line.substr(pos + 8);
+			current.name.erase(current.name.find_last_of('"'));
+			current.name.erase(std::remove(current.name.begin(), current.name.end(), '"'), current.name.end());
+		}
+		else if ((pos = line.find("\"version\":")) != std::string::npos)
+		{
+			current.version = line.substr(pos + 11);
+			current.version.erase(current.version.find_last_of('"'));
+			current.version.erase(std::remove(current.version.begin(), current.version.end(), '"'), current.version.end());
+		}
+		else if ((pos = line.find("\"hasPassword\":")) != std::string::npos)
+		{
+			current.hasPassword = line.find("true") != std::string::npos;
+		}
+		else if ((pos = line.find("\"ping\":")) != std::string::npos)
+		{
+			current.ping = std::stoi(line.substr(pos + 7));
+		}
+		else if (line.find("}") != std::string::npos)
+		{
+			lobbies.push_back(current);
+			current = Lobby();
 		}
 	}
 
-	return lobbies;
+	return true;
 }
 
-// save lobbies (merges old + new, prevents wipe on restart)
-bool save_lobbies(const std::vector<Lobby>& newLobbies, const std::string& path) {
-	std::vector<Lobby> combined = load_lobbies(path);
-	combined.insert(combined.end(), newLobbies.begin(), newLobbies.end());
-
+// writes lobbies to json [midly]
+bool write_lobbies_to_file(const std::vector<Lobby>& lobbies, const std::string& path)
+{
 	std::ofstream out(path);
 	if (!out.is_open())
 		return false;
 
 	out << "[\n";
-	for (size_t i = 0; i < combined.size(); ++i) {
-		const Lobby& lobby = combined[i];
+	for (size_t i = 0; i < lobbies.size(); ++i)
+	{
+		const Lobby& lobby = lobbies[i];
 		out << "  {\n";
-		out << "    \"name\": \"" << escape_json(lobby.name) << "\",\n";      // [ENSURE] raw input only
-		out << "    \"version\": \"" << escape_json(lobby.version) << "\",\n"; // [ENSURE] raw input only
+		out << "    \"name\": \"" << escape_json(lobby.name) << "\",\n";
+		out << "    \"version\": \"" << escape_json(lobby.version) << "\",\n";
 		out << "    \"hasPassword\": " << (lobby.hasPassword ? "true" : "false") << ",\n";
 		out << "    \"ping\": " << lobby.ping << "\n";
 		out << "  }";
-		if (i + 1 < combined.size()) out << ",";
+		if (i + 1 < lobbies.size()) out << ",";
 		out << "\n";
 	}
 	out << "]\n";
 
+	out.close();
 	return true;
+}
+
+// checks if lobby already exists to prevent dupes [midly]
+bool lobby_exists(const std::vector<Lobby>& lobbies, const Lobby& lobby)
+{
+	for (const auto& l : lobbies)
+	{
+		if (l.name == lobby.name && l.version == lobby.version)
+			return true;
+	}
+	return false;
+}
+
+// saves lobby list to a json file, e.g., lobbies.json
+bool save_lobbies(const std::vector<Lobby>& lobbies, const std::string& path) {
+	std::vector<Lobby> allLobbies;
+
+	load_lobbies(allLobbies, path);
+
+	for (const auto& lobby : lobbies) {
+		if (!lobby_exists(allLobbies, lobby)) {
+			allLobbies.push_back(lobby);
+		}
+	}
+
+	return write_lobbies_to_file(allLobbies, path);
 }

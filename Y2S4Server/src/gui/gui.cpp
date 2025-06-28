@@ -19,24 +19,6 @@ void BeginGUIFrame()
 
 void RenderGUI()
 {
-    static bool firstFrame = true;
-    if (firstFrame)
-    {
-        ImGui::SetNextWindowSize(ImVec2(400, 300)); // initial width, height
-
-        ImGuiStyle& style = ImGui::GetStyle();
-        ImVec4* colors = style.Colors;
-
-        colors[ImGuiCol_TableHeaderBg] = ImVec4(0.3f, 0.15f, 0.0f, 1.0f); // Dark orange
-        colors[ImGuiCol_Button] = ImVec4(0.5f, 0.25f, 0.0f, 1.0f);
-        colors[ImGuiCol_ButtonHovered] = ImVec4(0.6f, 0.3f, 0.0f, 1.0f);
-        colors[ImGuiCol_ButtonActive] = ImVec4(0.7f, 0.35f, 0.0f, 1.0f);
-        colors[ImGuiCol_Text] = ImVec4(1.0f, 0.9f, 0.8f, 1.0f); // Slightly off-white
-        colors[ImGuiCol_WindowBg] = ImVec4(0.08f, 0.08f, 0.08f, 1.0f);
-
-        firstFrame = false;
-    }
-
     // Globals
     static std::vector<Lobby> lobbies;
     static int selectedRow = -1;
@@ -49,6 +31,27 @@ void RenderGUI()
     static int selectedVersion = 0;
     static bool showPasswordPopup = false;
     static char enteredPassword[32] = "";
+
+    static bool firstFrame = true;
+    if (firstFrame)
+    {
+        ImGui::SetNextWindowSize(ImVec2(400, 300));
+
+        ImGuiStyle& style = ImGui::GetStyle();
+        ImVec4* colors = style.Colors;
+
+        colors[ImGuiCol_TableHeaderBg] = ImVec4(0.3f, 0.15f, 0.0f, 1.0f);
+        colors[ImGuiCol_Button] = ImVec4(0.5f, 0.25f, 0.0f, 1.0f);
+        colors[ImGuiCol_ButtonHovered] = ImVec4(0.6f, 0.3f, 0.0f, 1.0f);
+        colors[ImGuiCol_ButtonActive] = ImVec4(0.7f, 0.35f, 0.0f, 1.0f);
+        colors[ImGuiCol_Text] = ImVec4(1.0f, 0.9f, 0.8f, 1.0f);
+        colors[ImGuiCol_WindowBg] = ImVec4(0.08f, 0.08f, 0.08f, 1.0f);
+
+        firstFrame = false;
+    }
+
+    lobbies.clear();
+    load_lobbies(lobbies, "lobbies.json");
 
     ImGui::Begin("WillyNet DEV BUILD");
 

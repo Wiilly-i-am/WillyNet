@@ -108,6 +108,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="includes\kiero\minhook\dll_resources\MinHook.def" />
+    <None Include="src\matchmaker\app.py" />
+    <None Include="src\matchmaker\lobbies.json" />
     <None Include="x64\Debug\Y2S4Server.tlog\CL.command.1.tlog" />
     <None Include="x64\Debug\Y2S4Server.tlog\unsuccessfulbuild" />
     <None Include="x64\Debug\Y2S4Server.tlog\Y2S4Server.lastbuildstate" />
@@ -116,6 +118,7 @@
     <ResourceCompile Include="includes\kiero\minhook\dll_resources\MinHook.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="src\matchmaker\requirements.txt" />
     <Text Include="x64\Debug\Y2S4Server.Build.CppClean.log" />
     <Text Include="x64\Debug\Y2S4Server.log" />
     <Text Include="x64\Debug\Y2S4Server.vcxproj.FileListAbsolute.txt" />
